@@ -1,5 +1,5 @@
 script_name("ChunkySA")
-local script_version = 1.90
+local script_version = 1.0
 
 local samp = require 'samp.events'
 local imgui = require 'mimgui'
@@ -38,9 +38,9 @@ local CHUNK_SIZE = 100.0
 local MAX_SAMP_SLOTS = 800
 
 local presets = {
-    { name = u8"Малая дистанция", maxObj = 500, speed = 150, dL = 500.0, dM = 300.0, dS = 160.0 },
-    { name = u8"Средняя дистанция", maxObj = 800, speed = 300, dL = 800.0, dM = 450.0, dS = 250.0 },
-    { name = u8"Дальняя дистанция", maxObj = 1500, speed = 600, dL = 1200.0, dM = 700.0, dS = 400.0 }
+    { name = u8"ГЊГ Г«Г Гї Г¤ГЁГ±ГІГ Г­Г¶ГЁГї", maxObj = 500, speed = 150, dL = 500.0, dM = 300.0, dS = 160.0 },
+    { name = u8"Г‘Г°ГҐГ¤Г­ГїГї Г¤ГЁГ±ГІГ Г­Г¶ГЁГї", maxObj = 800, speed = 300, dL = 800.0, dM = 450.0, dS = 250.0 },
+    { name = u8"Г„Г Г«ГјГ­ГїГї Г¤ГЁГ±ГІГ Г­Г¶ГЁГї", maxObj = 1500, speed = 600, dL = 1200.0, dM = 700.0, dS = 400.0 }
 }
 
 local cfg = {
@@ -59,10 +59,10 @@ local cfg = {
 }
 
 local notifPositions = {
-    u8"Слева снизу",
-    u8"Снизу (по центру)",
-    u8"Справа снизу",
-    u8"Сверху (по центру)"
+    u8"Г‘Г«ГҐГўГ  Г±Г­ГЁГ§Гі",
+    u8"Г‘Г­ГЁГ§Гі (ГЇГ® Г¶ГҐГ­ГІГ°Гі)",
+    u8"Г‘ГЇГ°Г ГўГ  Г±Г­ГЁГ§Гі",
+    u8"Г‘ГўГҐГ°ГµГі (ГЇГ® Г¶ГҐГ­ГІГ°Гі)"
 }
 
 local UI = {
@@ -817,7 +817,7 @@ function checkUpdates(is_manual)
     if not cfg.autoUpdate and not is_manual then return end
     local updateFile_tmp = cacheFolder .. 'chunky_update_' .. tostring(math.random(100000, 999999)) .. '.json'
     activeTempFiles[updateFile_tmp] = true
-    if is_manual then showSystemNotification(u8"Проверка обновлений...", 3) end
+    if is_manual then showSystemNotification(u8"ГЏГ°Г®ГўГҐГ°ГЄГ  Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГ©...", 3) end
     downloadUrlToFile(updateUrl .. "?t=" .. tostring(os.time()), updateFile_tmp, function(id, status)
         if status == dlstatus.STATUS_ENDDOWNLOADDATA then
             local f = io.open(updateFile_tmp, "rb")
@@ -839,7 +839,7 @@ function checkUpdates(is_manual)
                 if data and data.version and data.url then
                     if tonumber(data.version) > tonumber(script_version) then
                         local is_silent = (data.silent == true) and not is_manual
-                        if not is_silent then showSystemNotification(u8"Найдено обновление! Загрузка...", 3) end
+                        if not is_silent then showSystemNotification(u8"ГЌГ Г©Г¤ГҐГ­Г® Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ! Г‡Г ГЈГ°ГіГ§ГЄГ ...", 3) end
                         lua_thread.create(function()
                             wait(100)
                             local scriptPath = thisScript().path
@@ -862,32 +862,32 @@ function checkUpdates(is_manual)
                                             fOut:write(newCode)
                                             fOut:close()
                                             saveServerDatabase(true)
-                                            if not is_silent then showSystemNotification(u8"Успешно обновлено! Перезапуск...", 1) end
+                                            if not is_silent then showSystemNotification(u8"Г“Г±ГЇГҐГёГ­Г® Г®ГЎГ­Г®ГўГ«ГҐГ­Г®! ГЏГҐГ°ГҐГ§Г ГЇГіГ±ГЄ...", 1) end
                                             lua_thread.create(function() wait(1500) thisScript():reload() end)
                                         elseif not is_silent then
-                                            showSystemNotification(u8"Ошибка: Файл скрипта занят!", 2)
+                                            showSystemNotification(u8"ГЋГёГЁГЎГЄГ : Г”Г Г©Г« Г±ГЄГ°ГЁГЇГІГ  Г§Г Г­ГїГІ!", 2)
                                         end
                                     end
                                 elseif status2 == dlstatus.STATUS_EX_ERROR then
                                     pcall(os.remove, tempPath)
                                     activeTempFiles[tempPath] = nil
-                                    if not is_silent then showSystemNotification(u8"Ошибка при скачивании обновления!", 2) end
+                                    if not is_silent then showSystemNotification(u8"ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ Г±ГЄГ Г·ГЁГўГ Г­ГЁГЁ Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГї!", 2) end
                                 end
                             end)
                         end)
                     elseif is_manual then
-                        showSystemNotification(u8"У вас установлена последняя версия!", 1)
+                        showSystemNotification(u8"Г“ ГўГ Г± ГіГ±ГІГ Г­Г®ГўГ«ГҐГ­Г  ГЇГ®Г±Г«ГҐГ¤Г­ГїГї ГўГҐГ°Г±ГЁГї!", 1)
                     end
                 elseif is_manual then
-                    showSystemNotification(u8"Ошибка: Неверный формат ответа!", 2)
+                    showSystemNotification(u8"ГЋГёГЁГЎГЄГ : ГЌГҐГўГҐГ°Г­Г»Г© ГґГ®Г°Г¬Г ГІ Г®ГІГўГҐГІГ !", 2)
                 end
             elseif is_manual then
-                showSystemNotification(u8"Ошибка: Пустой ответ от GitHub!", 2)
+                showSystemNotification(u8"ГЋГёГЁГЎГЄГ : ГЏГіГ±ГІГ®Г© Г®ГІГўГҐГІ Г®ГІ GitHub!", 2)
             end
         elseif status == dlstatus.STATUS_EX_ERROR then
             pcall(os.remove, updateFile_tmp)
             activeTempFiles[updateFile_tmp] = nil
-            if is_manual then showSystemNotification(u8"Ошибка соединения с GitHub!", 2) end
+            if is_manual then showSystemNotification(u8"ГЋГёГЁГЎГЄГ  Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГї Г± GitHub!", 2) end
         end
     end)
 end
@@ -1584,15 +1584,15 @@ local mainFrame = imgui.OnFrame(
 
         local flags = imgui.WindowFlags.AlwaysAutoResize + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoScrollbar
         if imgui.Begin("##ChunkySettingsModal", UI.windowState, flags) then
-            imgui.Text(u8"Настройки ChunkySA")
+            imgui.Text(u8"ГЌГ Г±ГІГ°Г®Г©ГЄГЁ ChunkySA")
             imgui.SameLine()
             imgui.TextColored(imgui.ImVec4(0.5, 0.5, 0.5, 1.0), string.format("v%.2f", script_version))
             imgui.Spacing()
 
             local fieldWidth = 263
             local tripleWidth = 130
-            local worldStatus = inInteriorWorld and " [Интерьер]" or ""
-            imgui.Text(u8(string.format("База сервера (Объектов: %d/%d | Локальных: %d | В кэше: %d)%s:", stats.totalNow, cfg.maxLocalObjects, stats.renderedNow, stats.totalCached, worldStatus)))
+            local worldStatus = inInteriorWorld and " [Г€Г­ГІГҐГ°ГјГҐГ°]" or ""
+            imgui.Text(u8(string.format("ГЃГ Г§Г  Г±ГҐГ°ГўГҐГ°Г  (ГЋГЎГєГҐГЄГІГ®Гў: %d/%d | Г‹Г®ГЄГ Г«ГјГ­Г»Гµ: %d | Г‚ ГЄГЅГёГҐ: %d)%s:", stats.totalNow, cfg.maxLocalObjects, stats.renderedNow, stats.totalCached, worldStatus)))
             imgui.PushItemWidth(fieldWidth)
             if imgui.BeginCombo("##ServerDisplayCombo", u8(currentServerDisplay)) then
                 imgui.Selectable(u8(currentServerDisplay), true)
@@ -1606,7 +1606,7 @@ local mainFrame = imgui.OnFrame(
                 imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.80, 0.20, 0.20, 1.0))
                 imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(0.90, 0.30, 0.30, 1.0))
             end
-            if imgui.Button(isConfirming and u8"Точно очистить?" or u8"Очистить базу", imgui.ImVec2(135, 0)) then
+            if imgui.Button(isConfirming and u8"Г’Г®Г·Г­Г® Г®Г·ГЁГ±ГІГЁГІГј?" or u8"ГЋГ·ГЁГ±ГІГЁГІГј ГЎГ Г§Гі", imgui.ImVec2(135, 0)) then
                 if not isConfirming then
                     UI.confirmClearTimer = os.clock() + 3.0
                 else
@@ -1618,7 +1618,7 @@ local mainFrame = imgui.OnFrame(
                     stats.autoRemoved = 0
                     saveServerDatabase(true)
                     scanExistingServerObjects()
-                    showSystemNotification(u8"База маппинга текущего сервера очищена!", 1)
+                    showSystemNotification(u8"ГЃГ Г§Г  Г¬Г ГЇГЇГЁГ­ГЈГ  ГІГҐГЄГіГ№ГҐГЈГ® Г±ГҐГ°ГўГҐГ°Г  Г®Г·ГЁГ№ГҐГ­Г !", 1)
                 end
             end
             if isConfirming then imgui.PopStyleColor(2) end
@@ -1627,7 +1627,7 @@ local mainFrame = imgui.OnFrame(
             imgui.Separator()
             imgui.Spacing()
 
-            imgui.Text(u8"Пресеты настроек отображения:")
+            imgui.Text(u8"ГЏГ°ГҐГ±ГҐГІГ» Г­Г Г±ГІГ°Г®ГҐГЄ Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї:")
             for i, p in ipairs(presets) do
                 if i > 1 then imgui.SameLine() end
                 local isActivePreset = (cfg.maxLocalObjects == p.maxObj and cfg.spawnSpeed == p.speed and cfg.distLarge == p.dL and cfg.distMedium == p.dM and cfg.distSmall == p.dS)
@@ -1643,7 +1643,7 @@ local mainFrame = imgui.OnFrame(
                     UI.maxObjBuf[0] = p.maxObj
                     saveSettings()
                     forceStreamTick = true
-                    showSystemNotification(u8"Применен пресет: " .. p.name, 1)
+                    showSystemNotification(u8"ГЏГ°ГЁГ¬ГҐГ­ГҐГ­ ГЇГ°ГҐГ±ГҐГІ: " .. p.name, 1)
                 end
                 if isActivePreset then
                     imgui.PopStyleColor(1)
@@ -1651,7 +1651,7 @@ local mainFrame = imgui.OnFrame(
             end
 
             imgui.Spacing()
-            imgui.Text(u8"Полный лимит объектов в зоне стрима:")
+            imgui.Text(u8"ГЏГ®Г«Г­Г»Г© Г«ГЁГ¬ГЁГІ Г®ГЎГєГҐГЄГІГ®Гў Гў Г§Г®Г­ГҐ Г±ГІГ°ГЁГ¬Г :")
             UI.maxObjBuf[0] = cfg.maxLocalObjects
             imgui.PushItemWidth(fieldWidth)
             if imgui.InputInt("##MaxLocalObjects", UI.maxObjBuf, 50, 250) then
@@ -1662,39 +1662,39 @@ local mainFrame = imgui.OnFrame(
             imgui.PopItemWidth()
 
             imgui.Spacing()
-            imgui.Text(u8"Скорость прогрузки объектов в секунду:")
+            imgui.Text(u8"Г‘ГЄГ®Г°Г®Г±ГІГј ГЇГ°Г®ГЈГ°ГіГ§ГЄГЁ Г®ГЎГєГҐГЄГІГ®Гў Гў Г±ГҐГЄГіГ­Г¤Гі:")
             local iSpeed = imgui.new.int[1](cfg.spawnSpeed or 300)
             imgui.PushItemWidth(fieldWidth)
-            if imgui.SliderInt("##SpawnSpeed", iSpeed, 25, 1000, u8"%d шт/сек") then
+            if imgui.SliderInt("##SpawnSpeed", iSpeed, 25, 1000, u8"%d ГёГІ/Г±ГҐГЄ") then
                 cfg.spawnSpeed = iSpeed[0]
                 saveSettings()
             end
             imgui.PopItemWidth()
 
             imgui.Spacing()
-            imgui.Text(u8"Дальность прорисовки (Крупные / Средние / Мелкие):")
+            imgui.Text(u8"Г„Г Г«ГјГ­Г®Г±ГІГј ГЇГ°Г®Г°ГЁГ±Г®ГўГЄГЁ (ГЉГ°ГіГЇГ­Г»ГҐ / Г‘Г°ГҐГ¤Г­ГЁГҐ / ГЊГҐГ«ГЄГЁГҐ):")
             imgui.PushItemWidth(tripleWidth)
             local fDistL = imgui.new.float[1](cfg.distLarge)
-            if imgui.SliderFloat("##DistL", fDistL, 200.0, 1500.0, u8"%.0f м") then
+            if imgui.SliderFloat("##DistL", fDistL, 200.0, 1500.0, u8"%.0f Г¬") then
                 cfg.distLarge = fDistL[0]
                 saveSettings()
             end
             imgui.SameLine()
             local fDistM = imgui.new.float[1](cfg.distMedium)
-            if imgui.SliderFloat("##DistM", fDistM, 150.0, 1000.0, u8"%.0f м") then
+            if imgui.SliderFloat("##DistM", fDistM, 150.0, 1000.0, u8"%.0f Г¬") then
                 cfg.distMedium = fDistM[0]
                 saveSettings()
             end
             imgui.SameLine()
             local fDistS = imgui.new.float[1](cfg.distSmall)
-            if imgui.SliderFloat("##DistS", fDistS, 100.0, 600.0, u8"%.0f м") then
+            if imgui.SliderFloat("##DistS", fDistS, 100.0, 600.0, u8"%.0f Г¬") then
                 cfg.distSmall = fDistS[0]
                 saveSettings()
             end
             imgui.PopItemWidth()
 
             imgui.Spacing()
-            imgui.Text(u8"Положение системных уведомлений:")
+            imgui.Text(u8"ГЏГ®Г«Г®Г¦ГҐГ­ГЁГҐ Г±ГЁГ±ГІГҐГ¬Г­Г»Гµ ГіГўГҐГ¤Г®Г¬Г«ГҐГ­ГЁГ©:")
             imgui.PushItemWidth(fieldWidth)
             if imgui.BeginCombo("##NotifPosCombo", notifPositions[cfg.notifPos] or notifPositions[3]) then
                 for i, posName in ipairs(notifPositions) do
@@ -1711,48 +1711,48 @@ local mainFrame = imgui.OnFrame(
             imgui.Separator()
             imgui.Spacing()
 
-            imgui.Text(u8"Дополнительные функции:")
+            imgui.Text(u8"Г„Г®ГЇГ®Г«Г­ГЁГІГҐГ«ГјГ­Г»ГҐ ГґГіГ­ГЄГ¶ГЁГЁ:")
             imgui.Spacing()
 
             local bEnabled = imgui.new.bool(cfg.enabled)
-            if imgui.Checkbox(u8"Включить локальную прогрузку маппинга (ChunkySA)", bEnabled) then
+            if imgui.Checkbox(u8"Г‚ГЄГ«ГѕГ·ГЁГІГј Г«Г®ГЄГ Г«ГјГ­ГіГѕ ГЇГ°Г®ГЈГ°ГіГ§ГЄГі Г¬Г ГЇГЇГЁГ­ГЈГ  (ChunkySA)", bEnabled) then
                 cfg.enabled = bEnabled[0]
                 if not cfg.enabled then clearAllLocalObjects(true) else forceStreamTick = true end
                 saveSettings()
             end
 
             local bRecord = imgui.new.bool(cfg.recordMapping)
-            if imgui.Checkbox(u8"Автоматически сохранять новый маппинг сервера", bRecord) then
+            if imgui.Checkbox(u8"ГЂГўГІГ®Г¬Г ГІГЁГ·ГҐГ±ГЄГЁ Г±Г®ГµГ°Г Г­ГїГІГј Г­Г®ГўГ»Г© Г¬Г ГЇГЇГЁГ­ГЈ Г±ГҐГ°ГўГҐГ°Г ", bRecord) then
                 cfg.recordMapping = bRecord[0]
                 saveSettings()
             end
 
             local bAutoDel = imgui.new.bool(cfg.autoDeleteMissing)
-            if imgui.Checkbox(u8"Автоудаление пропавших объектов со старых координат", bAutoDel) then
+            if imgui.Checkbox(u8"ГЂГўГІГ®ГіГ¤Г Г«ГҐГ­ГЁГҐ ГЇГ°Г®ГЇГ ГўГёГЁГµ Г®ГЎГєГҐГЄГІГ®Гў Г±Г® Г±ГІГ Г°Г»Гµ ГЄГ®Г®Г°Г¤ГЁГ­Г ГІ", bAutoDel) then
                 cfg.autoDeleteMissing = bAutoDel[0]
                 saveSettings()
             end
 
             local bPrio = imgui.new.bool(cfg.prioritizeLarge)
-            if imgui.Checkbox(u8"Приоритет крупных объектов и вытеснение мелких при лимите", bPrio) then
+            if imgui.Checkbox(u8"ГЏГ°ГЁГ®Г°ГЁГІГҐГІ ГЄГ°ГіГЇГ­Г»Гµ Г®ГЎГєГҐГЄГІГ®Гў ГЁ ГўГ»ГІГҐГ±Г­ГҐГ­ГЁГҐ Г¬ГҐГ«ГЄГЁГµ ГЇГ°ГЁ Г«ГЁГ¬ГЁГІГҐ", bPrio) then
                 cfg.prioritizeLarge = bPrio[0]
                 saveSettings()
                 forceStreamTick = true
             end
 
             local bCol = imgui.new.bool(cfg.disableFarCollision)
-            if imgui.Checkbox(u8"Отключать физическую коллизию у дальних объектов", bCol) then
+            if imgui.Checkbox(u8"ГЋГІГЄГ«ГѕГ·Г ГІГј ГґГЁГ§ГЁГ·ГҐГ±ГЄГіГѕ ГЄГ®Г«Г«ГЁГ§ГЁГѕ Гі Г¤Г Г«ГјГ­ГЁГµ Г®ГЎГєГҐГЄГІГ®Гў", bCol) then
                 cfg.disableFarCollision = bCol[0]
                 saveSettings()
             end
 
             local bUpd = imgui.new.bool(cfg.autoUpdate)
-            if imgui.Checkbox(u8"Автообновление скрипта", bUpd) then
+            if imgui.Checkbox(u8"ГЂГўГІГ®Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ Г±ГЄГ°ГЁГЇГІГ ", bUpd) then
                 cfg.autoUpdate = bUpd[0]
                 saveSettings()
             end
             imgui.SameLine()
-            if imgui.Button(u8"Проверить обновление") then
+            if imgui.Button(u8"ГЏГ°Г®ГўГҐГ°ГЁГІГј Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ") then
                 checkUpdates(true)
             end
 
@@ -1768,7 +1768,7 @@ local mainFrame = imgui.OnFrame(
             local btnWidth = 100
             local currentY = imgui.GetCursorPosY()
             imgui.AlignTextToFramePadding()
-            imgui.TextColored(imgui.ImVec4(0.6, 0.6, 0.6, 1.0), u8"Размер базы данных: " .. sizeText)
+            imgui.TextColored(imgui.ImVec4(0.6, 0.6, 0.6, 1.0), u8"ГђГ Г§Г¬ГҐГ° ГЎГ Г§Г» Г¤Г Г­Г­Г»Гµ: " .. sizeText)
 
             imgui.SameLine()
             local availRight = imgui.GetContentRegionAvail().x
@@ -1776,7 +1776,7 @@ local mainFrame = imgui.OnFrame(
                 imgui.SetCursorPosX(imgui.GetCursorPosX() + availRight - btnWidth)
             end
             imgui.SetCursorPosY(currentY)
-            if imgui.Button(u8"Закрыть", imgui.ImVec2(btnWidth, 0)) then
+            if imgui.Button(u8"Г‡Г ГЄГ°Г»ГІГј", imgui.ImVec2(btnWidth, 0)) then
                 UI.windowState[0] = false
             end
 
